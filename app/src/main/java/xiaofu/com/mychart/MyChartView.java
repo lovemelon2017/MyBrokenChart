@@ -10,6 +10,7 @@ import android.graphics.Point;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class MyChartView extends View {
     private String[] monthText = new String[]{"8/10", "11/11", "10/12", "现在"};
     private String[] typeText = new String[]{"偏油", "适中", "缺油", "严重缺油"};
     private int[] score = new int[]{1, 2, 3, 4};
+    private int selectMonth = score.length;//选中的月份
     private List<Point> scorePoints;
     private int textSize = dipToPx(10); //字体大小
     private Paint brokenPaint;
@@ -107,6 +109,7 @@ public class MyChartView extends View {
         super.onSizeChanged(w, h, oldw, oldh);
         viewWith = w;
         viewHeight = h;
+        Log.e("han", "onSizeChanged");
         initData();
     }
 
@@ -204,7 +207,6 @@ public class MyChartView extends View {
         brokenPath.reset();
         brokenPaint.setColor(Color.parseColor(blueColor));
         brokenPaint.setStyle(Paint.Style.FILL);
-
         //绘制三角
         Point point = new Point(x, y);
         brokenPath.moveTo(point.x, point.y);
