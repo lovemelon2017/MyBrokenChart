@@ -22,29 +22,21 @@ import java.util.List;
 public class MyChartView extends View {
     private float viewWith;
     private float viewHeight;
-
     private float brokenLineWith = 0.5f;
-
-    private int straightLineColor = 0xffe2e2e2;//0xffeaeaea
-    private String blueColor = "#6196ff";
-    private String blueColorOut = "#4d72a6ff";
+    private int straightLineColor = 0xffe2e2e2;  //虚线
+    private String blueColor = "#6196ff";  //当前圆圈内颜色
+    private String blueColorOut = "#4d72a6ff";  //当前圆圈外颜色
     private String textGray = "#999999";
-
-    private int maxScore = 4;
-    private int minScore = 1;
-
+    private int maxScore = 4; // y轴最高
+    private int minScore = 1; // y轴最低
     private String[] monthText = new String[]{"8/10", "11/11", "10/12", "现在"};
     private String[] typeText = new String[]{"偏油", "适中", "缺油", "严重缺油"};
-    private int[] score = new int[]{4, 1, 3, 2};
-
+    private int[] score = new int[]{1, 2, 3, 4};
     private List<Point> scorePoints;
-
-    private int textSize = dipToPx(10);
-
+    private int textSize = dipToPx(10); //字体大小
     private Paint brokenPaint;
     private Paint dottedPaint;
     private Paint textPaint;
-
     private Path brokenPath;
 
     public MyChartView(Context context) {
@@ -91,16 +83,12 @@ public class MyChartView extends View {
 
     private void initData() {
         scorePoints = new ArrayList<>();
-        float maxScoreYCoordinate = viewHeight * 1 / 6f;
-        float minScoreYCoordinate = viewHeight * 4 / 6f;
-
-        Log.v("ScoreTrend", "initData: " + maxScoreYCoordinate);
-
-        float newWith = viewWith - (viewWith * 0.5f);//分隔线距离最左边和最右边的距离是0.15倍的viewWith
+        float maxScoreYCoordinate = viewHeight * 1 / 6f; //y轴最高
+        float minScoreYCoordinate = viewHeight * 4 / 6f; //y轴最低
+        float newWith = viewWith - (viewWith * 0.5f);    //x 轴宽
         int coordinateX;
-
+        //画点
         for (int i = 0; i < score.length; i++) {
-            Log.v("ScoreTrend", "initData: " + score[i]);
             Point point = new Point();
             coordinateX = (int) (newWith * ((float) (i) / (typeText.length - 1)) + (viewWith * 0.2f));
             point.x = coordinateX;
@@ -125,15 +113,13 @@ public class MyChartView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
         //绘制xy 文字
         drawText(canvas);
-        //drawMonthLine(canvas);
+        //x轴分断
         //画点
         drawPoint(canvas);
         //点之间连线
         drawBrokenLine(canvas);
-
     }
 
     //绘制折线穿过的点
@@ -143,11 +129,9 @@ public class MyChartView extends View {
         }
         brokenPaint.setStrokeWidth(dipToPx(1));
         for (int i = 0; i < scorePoints.size(); i++) {
-
             brokenPaint.setColor(Color.parseColor(blueColor));
             brokenPaint.setStyle(Paint.Style.FILL);
             canvas.drawCircle(scorePoints.get(i).x, scorePoints.get(i).y, dipToPx(5), brokenPaint);
-
             if (i == typeText.length - 1) {
                 //默认虚线
                 if (Math.abs(4 - score[i]) == 0) {
@@ -159,7 +143,6 @@ public class MyChartView extends View {
                 } else if (Math.abs(4 - score[i]) == 3) {
                     drawDottedLine(canvas, viewWith * 0.15f, viewHeight * 4 / 6f, viewWith * 0.95f, viewHeight * 4 / 6f);
                 }
-
                 brokenPaint.setColor(Color.parseColor(blueColorOut));
                 canvas.drawCircle(scorePoints.get(i).x, scorePoints.get(i).y, dipToPx(13), brokenPaint);
                 brokenPaint.setColor(Color.parseColor(blueColor));
@@ -169,12 +152,11 @@ public class MyChartView extends View {
                 textPaint.setColor(0xffffffff);
                 //绘制浮动文字
                 canvas.drawText(String.valueOf(typeText[Math.abs(4 - score[i])]),
-                        scorePoints.get(i).x + (dipToPx(50)-textSize)/2+dipToPx(28), scorePoints.get(i).y + textSize / 2, textPaint);
+                        scorePoints.get(i).x + (dipToPx(50) - textSize) / 2 + dipToPx(28), scorePoints.get(i).y + textSize / 2, textPaint);
 
             }
         }
     }
-
 
     //绘制折线
     private void drawBrokenLine(Canvas canvas) {
@@ -184,28 +166,23 @@ public class MyChartView extends View {
         if (score.length == 0) {
             return;
         }
-        Log.v("ScoreTrend", "drawBrokenLine: " + scorePoints.get(0));
         brokenPath.moveTo(scorePoints.get(0).x - 50, scorePoints.get(0).y);
         for (int i = 0; i < scorePoints.size(); i++) {
             brokenPath.lineTo(scorePoints.get(i).x, scorePoints.get(i).y);
         }
         canvas.drawPath(brokenPath, brokenPaint);
-
     }
 
     //绘制文本
     private void drawText(Canvas canvas) {
         textPaint.setTextSize(sp2px(10));
         textPaint.setColor(Color.parseColor(textGray));
-
         canvas.drawText(String.valueOf(typeText[0]), dipToPx(25), viewHeight * 1 / 6f + textSize * 0.25f, textPaint);
         canvas.drawText(String.valueOf(typeText[1]), dipToPx(25), viewHeight * 2 / 6f + textSize * 0.25f, textPaint);
         canvas.drawText(String.valueOf(typeText[2]), dipToPx(25), viewHeight * 3 / 6f + textSize * 0.25f, textPaint);
         canvas.drawText(String.valueOf(typeText[3]), dipToPx(25), viewHeight * 4 / 6f + textSize * 0.25f, textPaint);
-
         textPaint.setColor(Color.parseColor(textGray));
-
-        float newWith = viewWith - (viewWith * 0.5f);//分隔线距离最左边和最右边的距离是0.15倍的viewWith
+        float newWith = viewWith - (viewWith * 0.5f);
         float coordinateX;//分隔线X坐标
         textPaint.setTextSize(sp2px(10));
         textPaint.setStyle(Paint.Style.FILL);
@@ -219,9 +196,7 @@ public class MyChartView extends View {
             }
             //绘制y轴
             canvas.drawText(monthText[i], coordinateX, viewHeight * 5 / 6f + dipToPx(4) + textSize + dipToPx(5), textPaint);
-
         }
-
     }
 
     //绘制显示浮动文字的背景
@@ -230,6 +205,7 @@ public class MyChartView extends View {
         brokenPaint.setColor(Color.parseColor(blueColor));
         brokenPaint.setStyle(Paint.Style.FILL);
 
+        //绘制三角
         Point point = new Point(x, y);
         brokenPath.moveTo(point.x, point.y);
         point.x = point.x + dipToPx(7);
@@ -241,7 +217,7 @@ public class MyChartView extends View {
         canvas.drawPath(brokenPath, brokenPaint);
 
         RectF rect1 = new RectF(x + dipToPx(7), y - dipToPx(10), x + dipToPx(50), y + dipToPx(10));
-        //所有圆角大小相同
+        // 绘制圆角矩形
         brokenPath.addRoundRect(rect1, 15, 15, Path.Direction.CCW);
         canvas.drawPath(brokenPath, brokenPaint);
     }
